@@ -1,6 +1,6 @@
 //Mengambil argumen dari commend line
 const yargs = require('yargs');
-const {simpanContact} = require('./contacts');
+const {simpanContact, listContact, detailContact, deleteContact} = require('./contacts');
 
 yargs.command({
     command: "add",
@@ -17,7 +17,7 @@ yargs.command({
             type: "string"
         },
         hp: {
-            describe: "Email",
+            describe: "Nomor HP",
             demandOption: true,
             type: "string"
         }
@@ -31,7 +31,48 @@ yargs.command({
         simpanContact(argv.nama, argv.email, argv.hp);
     }
 
+}).demandCommand();
+//Menampilkan data semua kontak
+
+yargs.command({
+    command: "list",
+    discribe: "Menampilkan data contact",
+    handler() {
+        listContact();
+    }
 })
+
+//menampilkan detai sebuah kontak
+yargs.command({
+    command: "detail",
+    discribe: "Menampilkan detail contact berdasarkan nama",
+    bulider: {
+        nama: {
+            describe: "Nama Lengkap",
+            demandOption: true,
+            type: "string"
+        },
+    },
+    handler(argv) {
+        detailContact(argv.nama);
+    }
+})
+//menghapus
+yargs.command({
+    command: "delete",
+    discribe: "Menghapus contact berdasarkan nama",
+    bulider: {
+        nama: {
+            describe: "Nama Lengkap",
+            demandOption: true,
+            type: "string"
+        },
+    },
+    handler(argv) {
+        deleteContact(argv.nama);
+    }
+})
+
 
 yargs.parse();
 

@@ -14,14 +14,18 @@ if (!fs.existsSync(filePath)) {
 }
 const data = fs.readFileSync('data/contacts.json', 'utf-8');
 
-const simpanContact = (nama, email, hp) => {
-    // Tangkap Parameter yang telah di inputkan
-    const contact = { nama, email, hp };
+const loadContact = () => {
     //Baca File contacts.json
     const file = fs.readFileSync('data/contacts.json', 'utf-8');
     //Ubah parameter yang telah di inputkan menjadi json
     const contacts = JSON.parse(file);
+    return contacts;
+}
 
+const simpanContact = (nama, email, hp) => {
+    // Tangkap Parameter yang telah di inputkan
+    const contact = { nama, email, hp };
+    const contacts = loadContact();
     //Cek apakah ada data yang duplikat
     const duplikatNama = contacts.find(contact => contact.nama === nama);
     const duplikatNomor = contacts.find(contact => contact.hp === hp);
@@ -51,4 +55,40 @@ const simpanContact = (nama, email, hp) => {
     console.log('Terimakasih');
 }
 
-module.exports = { simpanContact }
+const detailContact = (nama) => {
+    const contacts = loadContact();
+
+    const contact = contacts.find((contact) => contact.nama.toLowerCase() === nama.toLowerCase());
+
+    if (!contact) {
+        console.log(chalk.red.inverse.bold(`${nama} tidak ditemukan!`));
+        return false;
+    }
+
+    console.log(chalk.green.inverse.bold(`${contact.nama}`));
+    if (contact.email) {
+        console.log(chalk.green.inverse.bold(`${contact.email}`));
+    }
+    console.log(chalk.green.inverse.bold(`${contact.hp}`));
+}
+
+const deleteContact = (nama) => {
+    const contacts = loadContact();
+    const newContact = contacts.filter((contact) => contact.nama.toLowerCase() !== nama.toLowerCase());
+
+    if (contacts.length === newContact.length) {
+        console.log(chalk.red.inverse.bold(`${nama} tidak ditemukan!`));
+        return false;
+    }
+    fs.writeFileSync('data/contacts.json', JSON.stringify(newContact));
+    console.log(`data ${nama} berhasil dihapus`);
+}
+
+const listContact = () => {
+    const contacts = loadContact();
+    contacts.forEach((contact, i) => {
+        console.log(`${i + 1}. ${contact.nama} - ${contact.hp}`);
+    })
+}
+
+module.exports = { simpanContact, listContact, detailContact, deleteContact }
